@@ -1,3 +1,3 @@
 # bolestivý
 
-![](https://github.com/MrZelly/bolestivy/blob/main/agro uni.jpeg?raw=true)
+![](https://github.com/MrZelly/bolestivy/blob/main/agro_uni.jpeg?raw=true)
