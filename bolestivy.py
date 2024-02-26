@@ -2,29 +2,24 @@ import discord
 import random
 import datetime
 import asyncio
-import threading
-from time import sleep
 from discord.ext import commands
 
 TOKEN_FILE = open("token.txt", "r")
 TOKEN = TOKEN_FILE.read()
+TOKEN_FILE.close()
 
 CURRENT_GAMES = []
 MOVIGN = False
 
-# Define intents
 intents = discord.Intents.all()
 
 client = commands.Bot(command_prefix=".", intents=intents)
 
-# register = client.create_group("register", "Register People")
-
-# Define the voice channel ID where players gather
+# IDs
 QUEUE_VOICE_ID = 1013018493119115284
 TFS_CATEGORY_ID = 935506571633508360
 SERVER_ID = 935506570601721856
 
-# Define the time range (18:00 to 21:00)
 START_HOUR = 18
 END_HOUR = 22
 
@@ -38,13 +33,11 @@ async def on_ready():
 async def on_voice_state_update(member, before, after):
     global CURRENT_GAMES, MOVING
     if after.channel and after.channel.id == QUEUE_VOICE_ID:
-        # Check if there are 8 players in the voice channel
+        # Check if there are 8 players in queue
         if len(after.channel.members) == 8:
-            # Check if it's within the specified time range
+            # Check if it's within the time range
             current_hour = datetime.datetime.now().hour
-            if START_HOUR <= current_hour < END_HOUR and not MOVING:
-                # Create two new voice channels
-            
+            if START_HOUR <= current_hour < END_HOUR and datetime.date.weekday != 0 and datetime.date.weekday != 3 and not MOVING:
                 MOVING = True
 
                 GAME_FILE = open("game.txt", "r")
@@ -55,7 +48,7 @@ async def on_voice_state_update(member, before, after):
                 GAME_FILE.write(str(GAME_NUM))
                 GAME_FILE.close()                
 
-                # Shuffle the players randomly
+                # Shuffle the players
                 players = random.sample(after.channel.members, k=2)
 
                 category = client.get_channel(TFS_CATEGORY_ID)
@@ -85,11 +78,11 @@ async def on_voice_state_update(member, before, after):
                 GAME_TEAMS = [TEAM1, TEAM2]
                 CURRENT_GAMES.append(GAME_TEAMS)
                 MOVING = False
-                # print(CURRENT_GAMES)    
+                print(CURRENT_GAMES)
 
-    if before.channel is not None:  # The member has left a voice channel
+    if before.channel is not None:  # left
         print("c")
-        text_channel_name = before.channel.name[:-4]  # Remove the last four characters
+        text_channel_name = before.channel.name[:-4]
         print(before.channel.name)
         print(before.channel.name[:-4])
         print(len(before.channel.name))
@@ -98,15 +91,13 @@ async def on_voice_state_update(member, before, after):
             print("d")
             await text_channel.set_permissions(member, read_messages=False)
 
-    if after.channel is not None:  # The member connected to a voice channel.
-        # Get the text channel with the same name as the voice channel (minus the last 4 characters).
+    if after.channel is not None:  #connected
         print("a")
         text_channel_name = after.channel.name[:-4]
         text_channel = discord.utils.get(after.channel.guild.text_channels, name=text_channel_name)
         
         if text_channel is not None:
             print("b")
-            # Add the 'read_messages' permission to the member for this text channel.
             await text_channel.set_permissions(member, read_messages=True)
 
     # if before.channel is not None:
@@ -186,5 +177,4 @@ async def _register(interaction:discord.Interaction, username: str):
         await interaction.response.send_message("You have been registered successfully!")"""
 
 
-# Run the bot
 client.run(TOKEN)
