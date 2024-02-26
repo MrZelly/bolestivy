@@ -9,7 +9,7 @@ TOKEN = TOKEN_FILE.read()
 TOKEN_FILE.close()
 
 CURRENT_GAMES = []
-MOVIGN = False
+MOVING = False
 
 intents = discord.Intents.all()
 
@@ -37,7 +37,7 @@ async def on_voice_state_update(member, before, after):
         if len(after.channel.members) == 8:
             # Check if it's within the time range
             current_hour = datetime.datetime.now().hour
-            if START_HOUR <= current_hour < END_HOUR and datetime.date.weekday != 0 and datetime.date.weekday != 3 and not MOVING:
+            if START_HOUR <= current_hour < END_HOUR and datetime.datetime.today().weekday() != 0 and datetime.datetime.today().weekday() != 3 and not MOVING:
                 MOVING = True
 
                 GAME_FILE = open("game.txt", "r")
@@ -46,7 +46,7 @@ async def on_voice_state_update(member, before, after):
                 GAME_FILE.close()
                 GAME_FILE = open("game.txt", "w")
                 GAME_FILE.write(str(GAME_NUM))
-                GAME_FILE.close()                
+                GAME_FILE.close()
 
                 # Shuffle the players
                 players = random.sample(after.channel.members, k=2)
@@ -83,9 +83,9 @@ async def on_voice_state_update(member, before, after):
     if before.channel is not None:  # left
         print("c")
         text_channel_name = before.channel.name[:-4]
-        print(before.channel.name)
-        print(before.channel.name[:-4])
-        print(len(before.channel.name))
+        # print(before.channel.name)
+        # print(before.channel.name[:-4])
+        # print(len(before.channel.name))
         text_channel = discord.utils.get(member.guild.text_channels, name=text_channel_name)
         if before.channel.name.startswith("game"):
             print("d")
